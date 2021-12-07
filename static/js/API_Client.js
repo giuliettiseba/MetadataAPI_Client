@@ -1,6 +1,22 @@
 $(document).ready(function () {
 });
 
+
+$("#Prev_button").click(function () {
+    const new_time = $('#metadata_table tr:last td').eq(1).html()
+    $("#start_time").val(new_time)
+    $("#rb_backward").prop("checked", true);
+    $("#call_button").click();
+});
+
+$("#Next_button").click(function () {
+    const new_time = $('#metadata_table tr td').eq(1).html()
+    $("#start_time").val(new_time)
+    $("#rb_forward").prop("checked", true);
+    $("#call_button").click();
+});
+
+
 $("#call_button").click(function () {
     const human_check = $("#human_check:checked").val()
     const vehicle_check = $("#vehicle_check:checked").val()
@@ -8,16 +24,11 @@ $("#call_button").click(function () {
     const time_interval = $("#time_interval").val() * 60
     const max_items = $("#max_items").val()
     const guid = $("#guid").val()
-    const unique_values = $("#unique_values_check").val()
-
+    const unique_values = $("#unique_values_check:checked").val()
     const rb_forward = $("#rb_forward:checked").val()
     const direction = (rb_forward) ? "Forward" : "Backward"
-
     const start_time = $("#start_time").val()
-
     get_metadata(human_check, vehicle_check, animal_check, time_interval, max_items, guid, direction, start_time, unique_values)
-
-
 });
 
 
@@ -26,34 +37,44 @@ function show_table(data) {
 
     const $table = $('<table/>');
     $table.addClass('table table-sm');
+    $table.attr('id', 'metadata_table');
+
     $table.append('<thead><tr>')
     $table.append('<th scope="col">ObjectId</th>')
     $table.append('<th scope="col">UTC Time</th>')
-
     $table.append('<th scope="col">X</th>')
     $table.append('<th scope="col">Y</th>')
-
     $table.append('<th scope="col">Type</th>')
     $table.append('<th scope="col">Likelihood</th>')
-
     $table.append('</tr></thead>')
 
     data.forEach(element => {
-        $table.append('<tr>')
-        $table.append(`<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.ObjectId}</td>`)
-        $table.append(`<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.UtcTime}</td>`)
-        $table.append(`<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Shape?.CenterOfGravity.X}</td>`)
-        $table.append(`<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Shape?.CenterOfGravity.Y}</td>`)
-
-        $table.append(`<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Class?.ClassCandidates[0]?.Type}</td>`)
-        $table.append(`<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Class?.ClassCandidates[0]?.Likelihood}</td>`)
-        $table.append('</tr>')
-
+        $table.append(function () {
+            return  `<tr>
+            <td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.ObjectId}</td>
+            <td>${element.VideoAnalyticsItems[0]?.Frames[0]?.UtcTime}</td>
+            <td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Shape?.CenterOfGravity.X}</td>
+            <td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Shape?.CenterOfGravity.Y}</td>
+            <td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Class?.ClassCandidates[0]?.Type}</td>
+            <td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Class?.ClassCandidates[0]?.Likelihood}</td>
+            </tr>`;
+            // let output = ''
+            // output += '<tr>';
+            // output += `<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.ObjectId}</td>`
+            // output += `<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.UtcTime}</td>`
+            // output += `<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Shape?.CenterOfGravity.X}</td>`
+            // output += `<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Shape?.CenterOfGravity.Y}</td>`
+            // output += `<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Class?.ClassCandidates[0]?.Type}</td>`
+            // output += `<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Class?.ClassCandidates[0]?.Likelihood}</td>`
+            // output += '</tr>';
+            // return output
+        });
     });
 
     $('#here_table').html('').append($table);
 
 }
+
 
 function get_metadata(human_check, vehicle_check, animal_check, time_interval, max_items, guid, direction, start_time, unique_values) {
 
@@ -75,7 +96,7 @@ function get_metadata(human_check, vehicle_check, animal_check, time_interval, m
             timeInterval: time_interval,
             maxItems: max_items,
             direction: direction,
-            uniqueValues: unique_values,
+            uniqueValues: unique_values === undefined?false:true,
         },
         dataType: 'json',
         success: function (data) {
