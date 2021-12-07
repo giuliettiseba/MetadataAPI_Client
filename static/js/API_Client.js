@@ -1,4 +1,14 @@
 $(document).ready(function () {
+
+    var $loading = $('#spinner').hide();
+    $(document)
+        .ajaxStart(function () {
+            $loading.show();
+        })
+        .ajaxStop(function () {
+            $loading.hide();
+        });
+
 });
 
 
@@ -42,6 +52,7 @@ function show_table(data) {
     $table.append('<thead><tr>')
     $table.append('<th scope="col">ObjectId</th>')
     $table.append('<th scope="col">UTC Time</th>')
+    $table.append('<th scope="col">Local Time</th>')
     $table.append('<th scope="col">X</th>')
     $table.append('<th scope="col">Y</th>')
     $table.append('<th scope="col">Type</th>')
@@ -50,24 +61,15 @@ function show_table(data) {
 
     data.forEach(element => {
         $table.append(function () {
-            return  `<tr>
+            return `<tr>
             <td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.ObjectId}</td>
             <td>${element.VideoAnalyticsItems[0]?.Frames[0]?.UtcTime}</td>
+            <td>${new Date(element.VideoAnalyticsItems[0]?.Frames[0]?.UtcTime).toLocaleTimeString()}</td>
             <td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Shape?.CenterOfGravity.X}</td>
             <td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Shape?.CenterOfGravity.Y}</td>
             <td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Class?.ClassCandidates[0]?.Type}</td>
             <td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Class?.ClassCandidates[0]?.Likelihood}</td>
             </tr>`;
-            // let output = ''
-            // output += '<tr>';
-            // output += `<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.ObjectId}</td>`
-            // output += `<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.UtcTime}</td>`
-            // output += `<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Shape?.CenterOfGravity.X}</td>`
-            // output += `<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Shape?.CenterOfGravity.Y}</td>`
-            // output += `<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Class?.ClassCandidates[0]?.Type}</td>`
-            // output += `<td>${element.VideoAnalyticsItems[0]?.Frames[0]?.Objects[0]?.Appearance?.Class?.ClassCandidates[0]?.Likelihood}</td>`
-            // output += '</tr>';
-            // return output
         });
     });
 
@@ -96,7 +98,7 @@ function get_metadata(human_check, vehicle_check, animal_check, time_interval, m
             timeInterval: time_interval,
             maxItems: max_items,
             direction: direction,
-            uniqueValues: unique_values === undefined?false:true,
+            uniqueValues: unique_values === undefined ? false : true,
         },
         dataType: 'json',
         success: function (data) {
@@ -106,15 +108,12 @@ function get_metadata(human_check, vehicle_check, animal_check, time_interval, m
         }
     });
 
-    $('#loadingDiv')
-        .hide()  // Hide it initially
-        .ajaxStart(function () {
-            $(this).show();
-        })
-        .ajaxStop(function () {
-            $(this).hide();
-        })
-    ;
+    // $('#loadingText').hide().ajaxStart(function () {
+    //         $(this).show();
+    //     })
+    //     .ajaxStop(function () {
+    //         $(this).hide();
+    //     });
 
     $("#target").submit(function (event) {
         alert("Handler for .submit() called.");
